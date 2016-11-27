@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<!--
+			1.首先需要有ul 和 一个按钮
+			2.li 是隔行变色的
+			3.当点击按钮为选中状态，li全都选中，否则li全都没选中；当li全选中的时候，按钮也选中
+			4.当鼠标移入的时候，li改变背景颜色，鼠标移出时，背景颜色恢复为原来的颜色
+			5.单独点击每一个li的时候，选中状态下背景颜色改变，不选中背景颜色恢复为原来的颜色
+		-->
+		<style>
+			body,
+			p {
+				margin: 0;
+			}
+			ul {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			.clearfix {
+				zoom: 1;
+			}
+			.clearfix:after {
+				content: "";
+				display: block;
+				clear: both;
+			}
+			#wrap {
+				width: 400px;
+				height: 350px;
+				border: 1px solid #000;
+			}
+			#box {
+				height: 300px;
+				border-bottom: 1px solid ;
+			}
+			li {
+				height: 50px;
+			}
+			input {
+				float: left;
+				margin: 18px 10px 0 10px;
+			}
+			p {
+				float: left;
+				font: 20px/50px "宋体";
+			}
+			#box span {
+				float: right;
+				margin-right: 20px;
+				font: 18px/50px "宋体";
+			}
+			#box1 span {
+				font: 20px/50px "宋体";
+			}
+		</style>
+		<script>
+			window.onload = function() {
+				var box = document.getElementById('box');
+				var box1 = document.getElementById('box1');
+				var li = box.getElementsByTagName('li');
+				var checks = box.getElementsByTagName('input');
+				var input = box1.getElementsByTagName('input')[0];
+				var arr = ["","#ccc"];
+				var oldColor = "";
+				var tab = true;
+				for(i = 0; i < li.length; i++) {
+					li[i].index = i;
+					li[i].style.background = arr[i%arr.length];
+					li[i].onmouseover = function() {
+						oldColor = this.style.background;
+						this.style.background = "greenyellow";
+					};
+					li[i].onmouseout = function() {
+						this.style.background = oldColor;
+					};
+					li[i].onclick = function() {
+						var onTab = true;
+						for(i = 0; i < checks.length; i++) {
+							if(checks[i].checked == false) {
+								onTab = false;
+							}
+						}
+						input.checked = onTab;
+						if(checks[this.index].checked) {
+							this.style.background = "greenyellow";
+						}else {
+							this.style.background = arr[this.index%arr.length];
+						}
+						oldColor = this.style.background;
+					};
+
+				}
+				input.onclick = function() {
+					for(i = 0; i < li.length; i++){
+						checks[i].checked = this.checked;
+						if(checks[i].checked == true) {
+							li[i].style.background = "greenyellow";
+						}else {
+							li[i].style.background = arr[i%arr.length];
+						}
+					}
+				};
+			};
+		</script>
+	</head>
+	<body>
+		<div id="wrap">
+			<div id="box">
+				<ul class="clearfix">
+					<li>
+						<input type="checkbox" />
+						<p>北京北京</p>
+						<span>梁博</span>
+					</li>
+					<li>
+						<input type="checkbox" />
+						<p>我爱北京天安门</p>
+						<span>梁博</span>
+					</li>
+					<li>
+						<input type="checkbox" />
+						<p>安静</p>
+						<span>梁博</span>
+					</li>
+					<li>
+						<input type="checkbox" />
+						<p>一个人</p>
+						<span>梁博</span>
+					</li>
+					<li>
+						<input type="checkbox" />
+						<p>如果爱</p>
+						<span>梁博</span>
+					</li>
+					<li>
+						<input type="checkbox" />
+						<p>花火</p>
+						<span>梁博</span>
+					</li>
+				</ul>
+			</div>
+			<div id="box1">
+				<input type="checkbox" />
+				<span>全选</span>
+			</div>
+		</div>
+	</body>
+</html>

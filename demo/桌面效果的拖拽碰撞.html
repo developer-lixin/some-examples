@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			body {
+				margin: 0;
+			}
+			ul {
+				margin: 0;
+				padding: 0;
+				list-style: none;
+			}
+			#box {
+				width: 1100px;
+				margin: 40px auto;
+			}
+			#list {
+				width: 1100px;
+				height: 450px;
+				margin-top: 10px;
+				position: relative;
+				overflow: hidden;
+			}
+			#list li {
+				float: left;
+				width: 240px;
+				height: 135px;
+				margin: 10px;
+				overflow: hidden;
+				z-index: 1;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div id="box">
+			<ul id="list">
+				<li><img src="img/1.jpg"/></li>
+				<li><img src="img/2.jpg"/></li>
+				<li><img src="img/3.jpg"/></li>
+				<li><img src="img/4.jpg"/></li>
+				<li><img src="img/5.jpg"/></li>
+				<li><img src="img/6.jpg"/></li>
+				<li><img src="img/7.jpg"/></li>
+				<li><img src="img/8.jpg"/></li>
+				<li><img src="img/9.jpg"/></li>
+				<li><img src="img/10.jpg"/></li>
+				<li><img src="img/11.jpg"/></li>
+				<li><img src="img/12.jpg"/></li>
+			</ul>
+		</div>
+		<script src="js/aTween.js"></script>
+		<script>
+			var list = document.getElementById("list");
+			var lis = list.children;
+			// 首先，要想图片移动，必须改变图片的位置，改变位置就需要定位，所以需要把布局转换一下
+			var pos = [];// 用来存放li 的位置
+			var zIndex = 1;
+			
+			/*-------------- 把浮动位置转换为定位位置    -----------------*/
+			for(var i = 0; i < lis.length; i++) {
+				pos[i] = {
+					left:lis[i].offsetLeft,
+					top:lis[i].offsetTop
+				};
+				lis[i].style.left = lis[i].offsetLeft + "px";
+				lis[i].style.top = lis[i].offsetTop + "px";
+				lis[i].style.zIndex = 1;// 先让每一张图片的层级为1，因为当移动的时候，需要改变移动图片的层级
+			}
+			
+			// 转换成绝对定位
+			for(var i = 0; i < lis.length; i++) {
+				lis[i].style.position = "absolute";
+				lis[i].style.margin = 0;
+				lis[i].index = i;
+				drag(lis[i]);
+			}
+			
+			// 拖拽
+			function drag(obj){
+				var disX = 0,
+					disY = 0;
+				obj.addEventListener('mousedown',fnDown);
+				// 鼠标按下
+				function fnDown(ev) {
+					obj.style.zIndex = ++zIndex; // 提升当前按下的层级
+					disX = ev.pageX - obj.offsetLeft;
+					disY = ev.pageY - obj.offsetTop;
+					
+					document.addEventListener('mousemove',fnMove);
+					document.addEventListener('mouseup',fnUp);
+					
+					ev.preventDefault();
+				}
+				
+				function fnMove(ev) {
+						obj.style.left = ev.pageX - disX + "px";
+						obj.style.top = ev.pageY - disY + "px";
+						
+						
+						var minObj = minFn(obj);
+						if(minObj && obj!=minObj){ // 如果有最小值，并且碰撞的还不是他自己
+							var oldIndex = obj.index; // 记录拖拽的是第几个
+							var newIndex = minObj.index; // 记录要碰撞的是第几个
+							// 如果拖拽元素 < 要碰撞的元素
+							if(oldIndex < newIndex){
+								// 循环所有的li ,并且li 大于拖拽的元素，小于等于碰撞的元素
+								for(var i=0;i<lis.length;i++){
+									if(lis[i].index >= oldIndex+1 && lis[i].index<=newIndex){
+										lis[i].index--;
+										mTween(lis[i],{
+											left:pos[lis[i].index].left,
+											top:pos[lis[i].index].top
+										},500,'bounceOut');
+									}
+								}
+								obj.index = newIndex; // 让拖拽元素的索引值等于碰撞元素的索引值
+							} else {
+								for(var i=0;i<lis.length;i++){
+									if(lis[i].index <= oldIndex-1 && lis[i].index>=newIndex){
+										lis[i].index++;
+										mTween(lis[i],{
+											left:pos[lis[i].index].left,
+											top:pos[lis[i].index].top
+										},500,'bounceOut');
+									}
+								}
+								
+								obj.index = newIndex;
+							}
+							
+						}
+						
+					}
+					
+					function fnUp() {
+						// 交换位置
+						mTween(obj,{left:pos[obj.index].left,top:pos[obj.index].top},500,"bounceOut");
+						document.removeEventListener('mousemove',fnMove);
+						document.removeEventListener('mouseup',fnUp);
+					}
+					
+				// 找到最小值
+				function minFn(obj) {
+				// 碰撞找到最小值，交换位置
+					var max = Infinity; // 定义一个最大值来进行比较，通过比较求出最小值
+					var objIndex = -1; // 用来记录是第几个
+					for(var i = 0; i < lis.length; i++) {
+						if(Duang(obj,lis[i])) {
+							var a = pos[lis[i].index].top - obj.offsetTop;
+							var b = pos[lis[i].index].left - obj.offsetLeft;
+							var sqrt = Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
+							// 找出最小的距离，记录是第几个
+							if(max > sqrt) {
+								max = sqrt;
+								objIndex = i;
+							}
+						}
+					}
+					
+					if(objIndex == -1) { 
+						return null;
+					}else {
+						return lis[objIndex]; // 如果objIndex !=-1 ,就说有碰撞元素，那么就把碰撞的是第几个元素返回去
+					}
+				}
+			}
+			
+			
+			// 碰撞函数
+			function Duang(obj,obj2) {
+				var l1 = obj.offsetLeft;
+				var t1 = obj.offsetTop;
+				var r1 = l1 + obj.offsetWidth;
+				var b1 = t1 + obj.offsetHeight;
+				
+				var l2 = obj2.offsetLeft;
+				var t2 = obj2.offsetTop;
+				var r2 = l2 + obj2.offsetWidth;
+				var b2 = t2 + obj2.offsetHeight;
+				
+				if(r1 < l2 || b1 < t2 || l1 > r2 || t1 > b2) {
+					return false;
+				} else {
+					return true;
+				}
+			}
+		</script>
+	</body>
+</html>

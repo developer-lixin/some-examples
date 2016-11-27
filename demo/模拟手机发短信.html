@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			body,
+			p {
+				margin: 0;
+			}
+			img {
+				border: none;
+				vertical-align: top;
+				width: 40px;
+				height: 40px;
+			}
+			.clearfix {
+				zoom: 1;
+			}
+			.clearfix:after {
+				content: "";
+				display: block;
+				clear: both;
+			}
+			.wrap {
+				width: 400px;
+				height: 400px;
+				margin: 30px auto;
+				background: #F1F1F1;
+				border: 1px solid #000;
+			}
+			#box {
+				height: 350px;
+				border-bottom: 1px solid #000;
+				overflow: auto;
+				word-break: break-all;
+			}
+			.left {
+				position: relative;
+				float: left;
+				margin: 10px 10px 10px 50px;
+			}
+			.left img {
+				position: absolute;
+				left: -45px;
+				top: 0;
+			}
+			.left p {
+				font: 14px/18px "微软雅黑";
+				background: greenyellow;
+				padding: 10px;
+			}
+			.right {
+				position: relative;
+				float: right;
+				margin: 10px 50px 10px 10px;
+			}
+			.right img {
+				position: absolute;
+				right: -45px;
+				top: 0;
+			}
+			.right p {
+				font: 14px/18px "微软雅黑";
+				background: blueviolet;
+				padding: 10px;
+			}
+			.mess {
+				margin: 5px;
+			}
+			#text {
+				height: 35px;
+				width: 250px;
+			}
+			#btn {
+				height: 35px;
+				width: 80px;
+			}
+		</style>
+		<script>
+			window.onload = function() {
+				var box = document.getElementById('box');/* 声明变量名 */
+				var btn = document.getElementById('btn');
+				var img = document.getElementById('img');
+				var text = document.getElementById('text');
+				var isTab = false;/* 开关，如果没有判断条件，就可以自定义一个开关 */
+				img.onclick = function() { /* 当点击图片的时候，条件为假时，显示第二张图片，为真时显示第一张图片 */
+					if(isTab){
+						img.src = "img/img (1).jpg";
+					} else {
+						img.src = "img/img (2).jpg";
+					}
+					isTab = !isTab; /* 取反 */
+				};
+				btn.onclick = function() { /* 当点击按钮的时候，输入框为空时，显示对话框，提示输入内容；否则，如果条件为真时显示box左侧的内容，为假时显示box右侧的内容 */
+					if(text.value == ""){
+						alert("请输入内容");
+					} else {
+						if(!isTab) {
+							box.innerHTML = '<div class="clearfix"><div class="left"><img src="img/img (1).jpg" /><p>' + text.value + '</p></div></div>' + box.innerHTML;
+						} else {
+							box.innerHTML = '<div class="clearfix"><div class="right"><img src="img/img (2).jpg" /><p>' + text.value + '</p></div></div>' + box.innerHTML;
+						}
+						text.value = "";
+					}
+				};
+			}
+		</script>
+	</head>
+	<body>
+		<div class="wrap">
+			<div id="box">
+				<!--<div class="clearfix">
+					<div class="left">
+						<img src="../img/img (1).jpg" />
+						<p>aaaa</p>
+					</div>
+				</div>
+				<div class="clearfix">
+					<div class="right">
+						<img src="../img/img (2).jpg" />
+						<p>aaaa</p>
+					</div>
+				</div>-->
+			</div>
+			<div class="mess">
+				<img src="img/img (1).jpg" id="img"/>
+				<input type="text" id="text" />
+				<input type="button" value="发送" id="btn" />
+			</div>
+		</div>
+	</body>
+</html>
